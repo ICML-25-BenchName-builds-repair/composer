@@ -20,6 +20,15 @@ from composer.utils import MissingConditionalImportError, dist, get_file
 
 if TYPE_CHECKING:
     import transformers
+try:
+    import transformers
+except ImportError as e:
+    from composer.utils import MissingConditionalImportError
+    raise MissingConditionalImportError(
+        extra_deps_group='nlp',
+        conda_package='transformers',
+        conda_channel='conda-forge'
+    ) from e
 
 # Allow models to have slightly more tokens than were used in the most verbose CoT in the dataset
 _MAX_ANSWER_BUFFER_LENGTH = 10
