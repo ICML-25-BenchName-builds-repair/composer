@@ -10,13 +10,18 @@ import random
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import torch
-import transformers
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 from composer.core import DataSpec
 from composer.core.data_spec import _default_split_batch, _split_list
 from composer.utils import MissingConditionalImportError, dist, get_file
+
+# Conditionally import transformers
+try:
+    import transformers
+except ImportError:
+    transformers = None
 
 if TYPE_CHECKING:
     import transformers
@@ -142,7 +147,7 @@ class InContextLearningQATaskDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer: Union['transformers.PreTrainedTokenizer', 'transformers.PreTrainedTokenizerFast'],
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -154,6 +159,11 @@ class InContextLearningQATaskDataset(Dataset):
         fewshot_random_seed: int,
         cot_delimiter: str = '',
     ):
+        if transformers is None:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                               conda_package='transformers',
+                                               conda_channel='conda-forge')
+        
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -365,7 +375,7 @@ class InContextLearningLMTaskDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer: Union['transformers.PreTrainedTokenizer', 'transformers.PreTrainedTokenizerFast'],
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -375,6 +385,11 @@ class InContextLearningLMTaskDataset(Dataset):
         destination_path: str,
         fewshot_random_seed: int,
     ):
+        if transformers is None:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                               conda_package='transformers',
+                                               conda_channel='conda-forge')
+        
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -1153,7 +1168,7 @@ class InContextLearningCodeEvalDataset(Dataset):
 def build_icl_dataloader(
     icl_task_type: str,
     dataset_uri: str,
-    tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+    tokenizer: Union['transformers.PreTrainedTokenizer', 'transformers.PreTrainedTokenizerFast'],
     batch_size: int,
     max_seq_len: int,
     pad_tok_id: int,
@@ -1168,6 +1183,10 @@ def build_icl_dataloader(
     pass_at_k: int = 1,
     generations_per_sample: int = 1,
 ) -> DataSpec:
+    if transformers is None:
+        raise MissingConditionalImportError(extra_deps_group='nlp',
+                                           conda_package='transformers',
+                                           conda_channel='conda-forge')
     if icl_task_type == 'multiple_choice':
         dataset = InContextLearningMultipleChoiceTaskDataset(dataset_uri,
                                                              tokenizer,
@@ -1304,7 +1323,7 @@ def partition_dataset_by_category(dataset_uri: str, destination_path: str) -> Di
 def get_icl_task_dataloader(
         icl_task_type: str,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer: Union['transformers.PreTrainedTokenizer', 'transformers.PreTrainedTokenizerFast'],
         batch_size: int,
         max_seq_len: int,
         pad_tok_id: int,
@@ -1319,6 +1338,10 @@ def get_icl_task_dataloader(
         generations_per_sample: int = 1,
         cot_delimiter: str = '',
         has_categories: bool = False) -> Union[DataSpec, Dict[str, DataSpec]]:
+    if transformers is None:
+        raise MissingConditionalImportError(extra_deps_group='nlp',
+                                           conda_package='transformers',
+                                           conda_channel='conda-forge')
     """This constructs a dataloader (or dataloaders if has_categories is True) capable of evaluating LLMs on in-context learning language modeling tasks, for example LAMBADA. An example usage is below:
 
     >>> dl = get_icl_task_dataloader(

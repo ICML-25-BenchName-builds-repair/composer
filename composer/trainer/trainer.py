@@ -29,7 +29,15 @@ import torch.distributed
 import torch.nn as nn
 import torch.utils.data
 from packaging import version
-from torch.cuda.amp.grad_scaler import GradScaler, _refresh_per_optimizer_state
+from torch.cuda.amp.grad_scaler import GradScaler
+try:
+    from torch.cuda.amp.grad_scaler import _refresh_per_optimizer_state
+except ImportError:
+    # In newer PyTorch versions, this function might not be available
+    # Define a fallback implementation
+    from collections import defaultdict
+    def _refresh_per_optimizer_state():
+        return defaultdict(dict)
 from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, DistributedSampler
 from torchmetrics import Metric

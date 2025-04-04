@@ -13,18 +13,22 @@ from typing import Callable, Optional
 from torch.utils.data import DataLoader
 
 from composer.core import Callback, State
-from composer.datasets.in_context_learning_evaluation import (InContextLearningCodeEvalDataset,
-                                                              InContextLearningLMTaskDataset,
-                                                              InContextLearningMultipleChoiceTaskDataset,
-                                                              InContextLearningQATaskDataset,
-                                                              InContextLearningSchemaTaskDataset)
 from composer.loggers import Logger
 from composer.loggers.console_logger import ConsoleLogger
 from composer.utils import MissingConditionalImportError, dist, maybe_create_object_store_from_uri, parse_uri
 
-ICLDatasetTypes = (InContextLearningLMTaskDataset, InContextLearningQATaskDataset,
-                   InContextLearningMultipleChoiceTaskDataset, InContextLearningSchemaTaskDataset,
-                   InContextLearningCodeEvalDataset)
+# Conditionally import the ICL dataset types
+try:
+    from composer.datasets.in_context_learning_evaluation import (InContextLearningCodeEvalDataset,
+                                                                 InContextLearningLMTaskDataset,
+                                                                 InContextLearningMultipleChoiceTaskDataset,
+                                                                 InContextLearningQATaskDataset,
+                                                                 InContextLearningSchemaTaskDataset)
+    ICLDatasetTypes = (InContextLearningLMTaskDataset, InContextLearningQATaskDataset,
+                      InContextLearningMultipleChoiceTaskDataset, InContextLearningSchemaTaskDataset,
+                      InContextLearningCodeEvalDataset)
+except ImportError:
+    ICLDatasetTypes = ()
 
 
 def _write(destination_path, src_file):
