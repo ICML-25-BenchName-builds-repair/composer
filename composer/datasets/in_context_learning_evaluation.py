@@ -10,7 +10,6 @@ import random
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import torch
-import transformers
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
@@ -142,7 +141,7 @@ class InContextLearningQATaskDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -154,6 +153,12 @@ class InContextLearningQATaskDataset(Dataset):
         fewshot_random_seed: int,
         cot_delimiter: str = '',
     ):
+        try:
+            import transformers  # Import here to make it optional
+        except ImportError as e:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                                conda_package='transformers',
+                                                conda_channel='conda-forge') from e
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -365,7 +370,7 @@ class InContextLearningLMTaskDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -375,6 +380,12 @@ class InContextLearningLMTaskDataset(Dataset):
         destination_path: str,
         fewshot_random_seed: int,
     ):
+        try:
+            import transformers  # Import here to make it optional
+        except ImportError as e:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                                conda_package='transformers',
+                                                conda_channel='conda-forge') from e
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -529,7 +540,7 @@ class InContextLearningMultipleChoiceTaskDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -539,6 +550,12 @@ class InContextLearningMultipleChoiceTaskDataset(Dataset):
         destination_path: str,
         fewshot_random_seed: int,
     ):
+        try:
+            import transformers  # Import here to make it optional
+        except ImportError as e:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                                conda_package='transformers',
+                                                conda_channel='conda-forge') from e
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -757,7 +774,7 @@ class InContextLearningSchemaTaskDataset(InContextLearningMultipleChoiceTaskData
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -767,6 +784,12 @@ class InContextLearningSchemaTaskDataset(InContextLearningMultipleChoiceTaskData
         destination_path: str,
         fewshot_random_seed: int,
     ):
+        try:
+            import transformers  # Import here to make it optional
+        except ImportError as e:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                                conda_package='transformers',
+                                                conda_channel='conda-forge') from e
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -936,7 +959,7 @@ class InContextLearningCodeEvalDataset(Dataset):
     def __init__(
         self,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         max_seq_len: int,
         pad_tok_id: int,
         num_fewshot: int,
@@ -950,6 +973,12 @@ class InContextLearningCodeEvalDataset(Dataset):
         top_p: Optional[float] = 0.95,
         top_k: Optional[int] = 40,
     ):
+        try:
+            import transformers  # Import here to make it optional
+        except ImportError as e:
+            raise MissingConditionalImportError(extra_deps_group='nlp',
+                                                conda_package='transformers',
+                                                conda_channel='conda-forge') from e
         try:
             from datasets import load_dataset  # pyright: ignore [reportGeneralTypeIssues]
         except ImportError as e:
@@ -1153,7 +1182,7 @@ class InContextLearningCodeEvalDataset(Dataset):
 def build_icl_dataloader(
     icl_task_type: str,
     dataset_uri: str,
-    tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+    tokenizer,  # Type annotation removed
     batch_size: int,
     max_seq_len: int,
     pad_tok_id: int,
@@ -1168,6 +1197,12 @@ def build_icl_dataloader(
     pass_at_k: int = 1,
     generations_per_sample: int = 1,
 ) -> DataSpec:
+    try:
+        import transformers  # Import here to make it optional
+    except ImportError as e:
+        raise MissingConditionalImportError(extra_deps_group='nlp',
+                                            conda_package='transformers',
+                                            conda_channel='conda-forge') from e
     if icl_task_type == 'multiple_choice':
         dataset = InContextLearningMultipleChoiceTaskDataset(dataset_uri,
                                                              tokenizer,
@@ -1304,7 +1339,7 @@ def partition_dataset_by_category(dataset_uri: str, destination_path: str) -> Di
 def get_icl_task_dataloader(
         icl_task_type: str,
         dataset_uri: str,
-        tokenizer: Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast],
+        tokenizer,  # Type annotation removed
         batch_size: int,
         max_seq_len: int,
         pad_tok_id: int,
@@ -1330,7 +1365,7 @@ def get_icl_task_dataloader(
        ... pad_tok_id=tokenizer.pad_token_id,
        ... num_fewshot=10,
        ... prompt_string='translate english to french',
-       ... example_delimiter='\n',
+       ... example_delimiter='\\n',
        ... continuation_delimiter=''
        )
     >>> eval_evaluator = Evaluator(
@@ -1345,12 +1380,13 @@ def get_icl_task_dataloader(
        ...     optimizers=optimizer,
        ...     max_duration="1ep",
        ... )
-
-    Args:
-        dataset_uri (str): Either a local path, or a remote path beginning with ``s3://``, or another backend
-            supported by :meth:`composer.utils.maybe_create_object_store_from_uri`.
-        tokenizer (Union[transformers.PreTrainedTokenizer, transformers.PreTrainedTokenizerFast]): The tokenizer used to transform data into batches
-        batch_size (int): Size of a batch used for eval
+    """
+    try:
+        import transformers  # Import here to make it optional
+    except ImportError as e:
+        raise MissingConditionalImportError(extra_deps_group='nlp',
+                                            conda_package='transformers',
+                                            conda_channel='conda-forge') from e
         max_seq_len (int): The sequence length expected by the model
         pad_tok_id (int): The special token reserved for padding the ends of batches
         num_fewshot (int): The number of complete fewshot examples to pad each test example with
