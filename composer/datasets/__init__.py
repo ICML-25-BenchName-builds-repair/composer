@@ -16,6 +16,25 @@ from composer.datasets.mnist import build_mnist_dataloader, build_synthetic_mnis
 from composer.datasets.synthetic import (SyntheticBatchPairDataset, SyntheticDataLabelType, SyntheticDataType,
                                          SyntheticPILDataset)
 
+# Conditionally import in_context_learning_evaluation
+try:
+    from composer.datasets.in_context_learning_evaluation import (
+        InContextLearningLMTaskDataset,
+        InContextLearningMultipleChoiceTaskDataset,
+        InContextLearningCodeEvalDataset,
+        InContextLearningQATaskDataset,
+        get_icl_task_dataloader,
+    )
+    __all__.extend([
+        'InContextLearningLMTaskDataset',
+        'InContextLearningMultipleChoiceTaskDataset',
+        'InContextLearningCodeEvalDataset',
+        'InContextLearningQATaskDataset',
+        'get_icl_task_dataloader',
+    ])
+except ImportError:
+    pass
+
 __all__ = [
     'ADE20k',
     'PytTrain',

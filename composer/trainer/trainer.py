@@ -29,7 +29,7 @@ import torch.distributed
 import torch.nn as nn
 import torch.utils.data
 from packaging import version
-from torch.cuda.amp.grad_scaler import GradScaler, _refresh_per_optimizer_state
+from torch.cuda.amp.grad_scaler import GradScaler
 from torch.nn.parallel import DistributedDataParallel
 from torch.utils.data import DataLoader, DistributedSampler
 from torchmetrics import Metric
@@ -47,6 +47,7 @@ from composer.models import ComposerModel
 from composer.optim import ComposerScheduler, DecoupledSGDW, compile_composer_scheduler
 from composer.profiler import Profiler
 from composer.trainer._deepspeed import _fix_batch_precision_for_deepspeed, _parse_deepspeed_config
+from composer.trainer._scaler import _refresh_per_optimizer_state
 from composer.trainer._scale_schedule import scale_pytorch_scheduler
 from composer.trainer._scaler import ClosureGradScaler
 from composer.trainer.dist_strategy import (DDPSyncStrategy, ddp_sync_context, prepare_ddp_module, prepare_fsdp_module,

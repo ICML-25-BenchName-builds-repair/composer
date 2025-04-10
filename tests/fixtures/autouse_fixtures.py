@@ -122,7 +122,10 @@ def mapi_fixture(monkeypatch):
     future_obj = Future()
     future_obj.set_result(None)
     mock_update = lambda *args, **kwargs: future_obj
-    monkeypatch.setattr(mcli, 'update_run_metadata', mock_update)
+    
+    # Check if mcli has the attribute before trying to mock it
+    if hasattr(mcli, 'update_run_metadata'):
+        monkeypatch.setattr(mcli, 'update_run_metadata', mock_update)
 
 
 @pytest.fixture(autouse=True)

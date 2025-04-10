@@ -5,10 +5,14 @@ from collections import defaultdict
 from typing import Optional, Union
 
 import torch
-from torch.cuda.amp.grad_scaler import GradScaler, OptState, _refresh_per_optimizer_state
+from torch.cuda.amp.grad_scaler import GradScaler, OptState
 from torch.optim import Optimizer
 
 from composer.utils import dist
+
+# Define our own _refresh_per_optimizer_state function since it's no longer available in torch
+def _refresh_per_optimizer_state():
+    return {"stage": OptState.READY, "found_inf_per_device": {}}
 
 __all__ = ['ClosureGradScaler']
 
